@@ -49,9 +49,13 @@ h2 {
 
 .number-grid, .star-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-    gap: 6px;
-    margin: 1rem 0;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    padding: 0.5rem;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
 }
 
 .number-grid button, .star-grid button {
@@ -113,4 +117,15 @@ button.selected {
 
 ul {
     padding-left: 1.2rem;
+}
+ 
+.number-grid button:hover, .star-grid button:hover {
+    background-color: var(--primary-dark);
+    color: white;
+}
+
+.number-grid button.selected, .star-grid button.selected {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary-dark);
 }
