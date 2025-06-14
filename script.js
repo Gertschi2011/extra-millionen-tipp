@@ -2,7 +2,26 @@ const numberGrid = document.getElementById('numberGrid');
 const starGrid = document.getElementById('starGrid');
 const statistik = document.getElementById('statistik');
 const savedTipsList = document.getElementById('savedTipsList');
+const statistikChart = document.getElementById('statistikChart');
 
+const chart = new Chart(statistikChart, {
+    type: 'bar',
+    data: {
+        labels: ["3", "12", "29", "35", "37", "11", "9"],
+        datasets: [{
+            label: 'Häufigkeit',
+            data: [2, 2, 2, 2, 3, 3, 2],
+            backgroundColor: 'rgba(76, 175, 80, 0.7)',
+            borderColor: 'rgba(56, 142, 60, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
 for (let i = 1; i <= 50; i++) {
     const btn = document.createElement('button');
     btn.textContent = i;

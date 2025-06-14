@@ -6,8 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <header>Extra Millionen Tipp</header>
+<main>
+    <!-- dein Inhalt hier -->
+</main>
     <h1>Extra Millionen Tipp</h1>
     <div class="actions">
         <button onclick="generateStatisticalTip()">Auto-Tipp (statistisch)</button>
@@ -28,6 +33,7 @@
     </div>
 
     <div id="statistik">
+        <canvas id="statistikChart" width="400" height="200"></canvas>
         <h3>Häufigste Zahlen:</h3>
         <ul><li>37 (3x)</li><li>3, 29, 35, 12 (je 2x)</li></ul>
         <h3>Häufigste Sterne:</h3>
