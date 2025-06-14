@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Extra Millionen Tipp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Extra Millionen Tipp</h1>
+    <div class="actions">
+        <button onclick="generateStatisticalTip()">Auto-Tipp (statistisch)</button>
+        <button onclick="toggleStatistik()">Statistik ein-/ausblenden</button>
+        <button onclick="clearSelection()">Zurücksetzen</button>
+    </div>
+
+    <h2>Wähle 5 Hauptzahlen</h2>
+    <div class="number-grid" id="numberGrid"></div>
+
+    <h2>Wähle 2 Sternzahlen</h2>
+    <div class="star-grid" id="starGrid"></div>
+
+    <div id="statistik">
+        <h3>Häufigste Zahlen:</h3>
+        <ul><li>37 (3x)</li><li>3, 29, 35, 12 (je 2x)</li></ul>
+        <h3>Häufigste Sterne:</h3>
+        <ul><li>11 (3x)</li><li>9, 12 (je 2x)</li></ul>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

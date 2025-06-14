@@ -1,0 +1,26 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f5f5f5;
+}
+h1 { color: #333; }
+.number-grid, .star-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
+}
+.number-grid button, .star-grid button {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.number-grid button.selected, .star-grid button.selected {
+    background-color: #4caf50;
+    color: white;
+    border-color: #388e3c;
+}
+#statistik { display: none; margin-top: 20px; }
+.actions { margin-bottom: 20px; }
+.actions button { margin-right: 10px; }
