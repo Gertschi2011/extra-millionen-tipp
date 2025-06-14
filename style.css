@@ -58,8 +58,9 @@ h2 {
     border: 1px solid #ddd;
     border-radius: 12px;
     margin-bottom: 1.5rem;
-    max-width: 100%;
-    box-sizing: border-box;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Verbessert die visuelle Einheitlichkeit und Abhebung der Zahlen- und Stern-Buttons */
@@ -221,6 +222,12 @@ body.dark-mode .copyright-footer {
     width: 100%;
     height: 48px;
     font-size: 1.2rem;
+  }
+}
+
+@media (min-width: 700px) {
+  .number-grid, .star-grid {
+    max-width: 480px;
   }
 }
 

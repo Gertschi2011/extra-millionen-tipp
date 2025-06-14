@@ -1,6 +1,9 @@
 // Darkmode: Automatisch & manuell
 function setDarkModeBySystem() {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+        document.body.classList.toggle('dark-mode', savedTheme === "dark");
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.body.classList.add('dark-mode');
     } else {
         document.body.classList.remove('dark-mode');
@@ -67,8 +70,6 @@ function clearSelection() {
     selectedStars = [];
     renderNumberGrid();
     renderStarGrid();
-    selectedNumbers = [...document.querySelectorAll('#numberGrid button.selected')].map(b => parseInt(b.textContent));
-    selectedStars = [...document.querySelectorAll('#starGrid button.selected')].map(b => parseInt(b.textContent));
 }
 
 const statistik = document.getElementById('statistik');
@@ -138,20 +139,10 @@ function toggleStatistik() {
 }
 
 function generateStatisticalTip() {
-    const mainNumbers = [37, 3, 29, 35, 12];
-    const stars = [11, 12];
-
-    clearSelection();
-
-    [...numberGrid.children].forEach(btn => {
-        if (mainNumbers.includes(parseInt(btn.textContent))) btn.classList.add('selected');
-    });
-
-    [...starGrid.children].forEach(btn => {
-        if (stars.includes(parseInt(btn.textContent))) btn.classList.add('selected');
-    });
-    selectedNumbers = [...document.querySelectorAll('#numberGrid button.selected')].map(b => parseInt(b.textContent));
-    selectedStars = [...document.querySelectorAll('#starGrid button.selected')].map(b => parseInt(b.textContent));
+    selectedNumbers = [37, 3, 29, 35, 12];
+    selectedStars = [11, 12];
+    renderNumberGrid();
+    renderStarGrid();
 }
 
 function saveTip() {
