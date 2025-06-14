@@ -121,12 +121,31 @@ button.selected {
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-#savedTipsList li {
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
+#savedTipsList,
+#latestTipsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#savedTipsList li,
+#latestTipsList li {
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
     border-radius: 8px;
-    background-color: #fafafa;
+    margin-bottom: 8px;
+    padding: 10px 16px;
+    font-size: 1.1rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.2s;
+}
+
+#savedTipsList li:hover,
+#latestTipsList li:hover {
+    background: #e0f2f1;
 }
 
 ul {
@@ -191,6 +210,11 @@ body.dark-mode #savedTipsList li {
     border-color: #444;
 }
 
+body.dark-mode #savedTipsList li:hover,
+body.dark-mode #latestTipsList li:hover {
+    background: #333c44;
+}
+
 .copyright-footer {
     background: var(--primary);
     color: #fff;
@@ -244,4 +268,13 @@ body.dark-mode .star-grid {
 
 body.dark-mode .number-grid {
   background-color: #1f1f1f;
+}
+
+/* Optional: Überschriften angleichen */
+#savedTipsSection h3,
+#latestTipsSection h3 {
+    margin-top: 1.5rem;
+    color: var(--primary-dark);
+    font-size: 1.2rem;
+    font-weight: bold;
 }
