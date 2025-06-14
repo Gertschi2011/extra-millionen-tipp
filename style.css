@@ -188,6 +188,23 @@ body.dark-mode #savedTipsList li {
     border-color: #444;
 }
 
+.copyright-footer {
+    background: var(--primary);
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+    border-radius: 0 0 16px 16px;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    margin-top: 2rem;
+}
+
+/* Darkmode Footer */
+body.dark-mode .copyright-footer {
+    background: var(--primary-dark);
+    color: #fff;
+}
+
 @media (max-width: 600px) {
   .number-grid {
     grid-template-columns: repeat(5, 1fr);
