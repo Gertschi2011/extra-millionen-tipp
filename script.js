@@ -4,13 +4,25 @@ const statistik = document.getElementById('statistik');
 const savedTipsList = document.getElementById('savedTipsList');
 const statistikChart = document.getElementById('statistikChart');
 
+let ziehungen = [];
+
+fetch("euromillionen_draws_2004_2025.json")
+  .then(response => response.json())
+  .then(data => {
+    ziehungen = data;
+    console.log("Ziehungen geladen:", ziehungen.length);
+    // Hier kannst du danach gleich Statistik berechnen
+  });
+  
+const { topZahlen } = berechneHäufigkeit();
+
 const chart = new Chart(statistikChart, {
     type: 'bar',
     data: {
-        labels: ["3", "12", "29", "35", "37", "11", "9"],
+        labels: topZahlen.map(z => z.num.toString()),
         datasets: [{
             label: 'Häufigkeit',
-            data: [2, 2, 2, 2, 3, 3, 2],
+            data: topZahlen.map(z => z.count),
             backgroundColor: 'rgba(76, 175, 80, 0.7)',
             borderColor: 'rgba(56, 142, 60, 1)',
             borderWidth: 1
@@ -89,4 +101,44 @@ function saveTip() {
     let gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
     gespeicherte.push(encrypted);
     localStorage.setItem("tipps", JSON.stringify(gespeicherte));
+}
+function loadSavedTips() {
+    const gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
+    gespeicherte.forEach(enc => {
+        try {
+            const entschluesselt = CryptoJS.AES.decrypt(enc, "geheim").toString(CryptoJS.enc.Utf8);
+            const li = document.createElement("li");
+            li.textContent = entschluesselt;
+            savedTipsList.appendChild(li);
+        } catch (e) {
+            console.warn("Fehler beim Entschlüsseln:", e);
+        }
+    });
+}
+
+// Sofort beim Laden der Seite ausführen
+document.addEventListener("DOMContentLoaded", loadSavedTips);
+
+function berechneHäufigkeit() {
+    const zahlenHäufigkeit = Array(51).fill(0);
+    const sterneHäufigkeit = Array(13).fill(0);
+
+    historicalDraws.forEach(draw => {
+        draw.numbers.forEach(n => zahlenHäufigkeit[n]++);
+        draw.stars.forEach(s => sterneHäufigkeit[s]++);
+    });
+
+    const topZahlen = zahlenHäufigkeit
+        .map((count, num) => ({ num, count }))
+        .slice(1)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+
+    const topSterne = sterneHäufigkeit
+        .map((count, num) => ({ num, count }))
+        .slice(1)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    return { topZahlen, topSterne };
 }
