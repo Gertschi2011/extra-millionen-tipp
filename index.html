@@ -13,7 +13,7 @@
 const passwort = localStorage.getItem("zugangscode");
 if (!passwort || passwort !== "12345") {
     const eingabe = prompt("Zugangscode erforderlich:");
-    if (eingabe !== "12345") {
+    if (eingabe !== "JuliaK") {
         alert("Falscher Code. Zugriff verweigert.");
         window.location.href = "https://www.google.com/";
     } else {
