@@ -80,7 +80,13 @@ function saveTip() {
     }
 
     const tip = `Zahlen: ${selectedMain.join(", ")} | Sterne: ${selectedStars.join(", ")}`;
-    const li = document.createElement("li");
-    li.textContent = tip;
-    savedTipsList.appendChild(li);
+    const encrypted = CryptoJS.AES.encrypt(tip, "geheim").toString();
+
+    let tipItem = document.createElement("li");
+    tipItem.textContent = tip;
+    savedTipsList.appendChild(tipItem);
+
+    let gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
+    gespeicherte.push(encrypted);
+    localStorage.setItem("tipps", JSON.stringify(gespeicherte));
 }

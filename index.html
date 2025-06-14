@@ -7,7 +7,20 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
+<script>
+const passwort = localStorage.getItem("zugangscode");
+if (!passwort || passwort !== "12345") {
+    const eingabe = prompt("Zugangscode erforderlich:");
+    if (eingabe !== "12345") {
+        alert("Falscher Code. Zugriff verweigert.");
+        window.location.href = "https://www.google.com/";
+    } else {
+        localStorage.setItem("zugangscode", eingabe);
+    }
+}
+</script>
 <body>
     <header>Extra Millionen Tipp</header>
 <main>
