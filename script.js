@@ -11,6 +11,8 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', set
 
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem("theme", isDark ? "dark" : "light");
 }
 
 // Zahlen- und Sternzahlen-Buttons anzeigen und auswählbar machen
@@ -65,6 +67,8 @@ function clearSelection() {
     selectedStars = [];
     renderNumberGrid();
     renderStarGrid();
+    selectedNumbers = [...document.querySelectorAll('#numberGrid button.selected')].map(b => parseInt(b.textContent));
+    selectedStars = [...document.querySelectorAll('#starGrid button.selected')].map(b => parseInt(b.textContent));
 }
 
 const statistik = document.getElementById('statistik');
@@ -123,8 +127,9 @@ document.addEventListener("DOMContentLoaded", () => {
   loadSavedTips();
 
   // Dark Mode beim Laden aktivieren
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark");
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+      document.body.classList.add("dark-mode");
   }
 });
 
@@ -145,6 +150,8 @@ function generateStatisticalTip() {
     [...starGrid.children].forEach(btn => {
         if (stars.includes(parseInt(btn.textContent))) btn.classList.add('selected');
     });
+    selectedNumbers = [...document.querySelectorAll('#numberGrid button.selected')].map(b => parseInt(b.textContent));
+    selectedStars = [...document.querySelectorAll('#starGrid button.selected')].map(b => parseInt(b.textContent));
 }
 
 function saveTip() {
@@ -161,6 +168,16 @@ function saveTip() {
 
     let tipItem = document.createElement("li");
     tipItem.textContent = tip;
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️";
+    deleteBtn.className = "btn btn-sm btn-danger ms-2";
+    deleteBtn.onclick = () => {
+        savedTipsList.removeChild(tipItem);
+        const gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
+        gespeicherte.splice(gespeicherte.indexOf(encrypted), 1);
+        localStorage.setItem("tipps", JSON.stringify(gespeicherte));
+    };
+    tipItem.appendChild(deleteBtn);
     savedTipsList.appendChild(tipItem);
 
     let gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
@@ -174,6 +191,16 @@ function loadSavedTips() {
             const entschluesselt = CryptoJS.AES.decrypt(enc, "geheim").toString(CryptoJS.enc.Utf8);
             const li = document.createElement("li");
             li.textContent = entschluesselt;
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "🗑️";
+            deleteBtn.className = "btn btn-sm btn-danger ms-2";
+            deleteBtn.onclick = () => {
+                savedTipsList.removeChild(li);
+                const gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
+                gespeicherte.splice(gespeicherte.indexOf(enc), 1);
+                localStorage.setItem("tipps", JSON.stringify(gespeicherte));
+            };
+            li.appendChild(deleteBtn);
             savedTipsList.appendChild(li);
         } catch (e) {
             console.warn("Fehler beim Entschlüsseln:", e);
@@ -229,4 +256,22 @@ function checkTipAgainstDraws() {
     } else {
         alert("Diese Kombination wurde bisher noch nie gezogen.");
     }
+}
+
+function exportTipsAsCSV() {
+    const gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
+    const csvRows = ["Tipp"];
+    gespeicherte.forEach(enc => {
+        try {
+            const tip = CryptoJS.AES.decrypt(enc, "geheim").toString(CryptoJS.enc.Utf8);
+            csvRows.push(`"${tip}"`);
+        } catch (e) {}
+    });
+    const blob = new Blob([csvRows.join("\n")], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'euromillionen_tipps.csv';
+    a.click();
+    URL.revokeObjectURL(url);
 }
