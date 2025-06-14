@@ -4,21 +4,22 @@
     <meta charset="UTF-8">
     <title>Extra Millionen Tipp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
-<body>
+<body class="container mt-4">
     <header>Extra Millionen Tipp</header>
 <main>
     <!-- dein Inhalt hier -->
     <h1>Extra Millionen Tipp</h1>
-    <div class="actions">
-        <button onclick="generateStatisticalTip()">Auto-Tipp (statistisch)</button>
-        <button onclick="toggleStatistik()">Statistik ein-/ausblenden</button>
-        <button onclick="clearSelection()">Zurücksetzen</button>
-        <button onclick="saveTip()">Tipp speichern</button>
+    <div class="actions mb-3">
+        <button class="btn btn-primary me-2" onclick="generateStatisticalTip()">Auto-Tipp (statistisch)</button>
+        <button class="btn btn-secondary me-2" onclick="toggleStatistik()">Statistik ein-/ausblenden</button>
+        <button class="btn btn-warning me-2" onclick="clearSelection()">Zurücksetzen</button>
+        <button class="btn btn-success" onclick="saveTip()">Tipp speichern</button>
     </div>
 
     <h2>Wähle 5 Hauptzahlen</h2>
@@ -35,9 +36,9 @@
     <div id="statistik">
         <canvas id="statistikChart" width="400" height="200"></canvas>
         <h3>Häufigste Zahlen:</h3>
-        <ul><li>37 (3x)</li><li>3, 29, 35, 12 (je 2x)</li></ul>
+        <ul id="topNumbersList"></ul>
         <h3>Häufigste Sterne:</h3>
-        <ul><li>11 (3x)</li><li>9, 12 (je 2x)</li></ul>
+        <ul id="topStarsList"></ul>
     </div>
 
    <script>

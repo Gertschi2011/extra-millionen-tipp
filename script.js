@@ -33,6 +33,23 @@ fetch("euromillionen_draws_2004_2025.json")
         }
       }
     });
+
+    const listZahlen = document.getElementById("topNumbersList");
+    const listSterne = document.getElementById("topStarsList");
+
+    const { topSterne } = berechneHäufigkeit(ziehungen);
+
+    topZahlen.forEach(z => {
+      const li = document.createElement("li");
+      li.textContent = `${z.num} (${z.count}x)`;
+      listZahlen.appendChild(li);
+    });
+
+    topSterne.forEach(s => {
+      const li = document.createElement("li");
+      li.textContent = `${s.num} (${s.count}x)`;
+      listSterne.appendChild(li);
+    });
   });
 for (let i = 1; i <= 50; i++) {
     const btn = document.createElement('button');
