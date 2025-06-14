@@ -1,15 +1,77 @@
+// Darkmode: Automatisch & manuell
+function setDarkModeBySystem() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+}
+setDarkModeBySystem();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setDarkModeBySystem);
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+}
+
+// Zahlen- und Sternzahlen-Buttons anzeigen und auswählbar machen
 const numberGrid = document.getElementById('numberGrid');
 const starGrid = document.getElementById('starGrid');
+let selectedNumbers = [];
+let selectedStars = [];
+
+function renderNumberGrid() {
+    numberGrid.innerHTML = '';
+    for (let i = 1; i <= 50; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = selectedNumbers.includes(i) ? 'selected' : '';
+        btn.onclick = () => {
+            if (selectedNumbers.includes(i)) {
+                selectedNumbers = selectedNumbers.filter(n => n !== i);
+            } else if (selectedNumbers.length < 5) {
+                selectedNumbers.push(i);
+            }
+            renderNumberGrid();
+        };
+        numberGrid.appendChild(btn);
+    }
+}
+
+function renderStarGrid() {
+    starGrid.innerHTML = '';
+    for (let i = 1; i <= 12; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = selectedStars.includes(i) ? 'selected' : '';
+        btn.onclick = () => {
+            if (selectedStars.includes(i)) {
+                selectedStars = selectedStars.filter(n => n !== i);
+            } else if (selectedStars.length < 2) {
+                selectedStars.push(i);
+            }
+            renderStarGrid();
+        };
+        starGrid.appendChild(btn);
+    }
+}
+
+// Initiales Rendern
+renderNumberGrid();
+renderStarGrid();
+
+// Optional: clearSelection Funktion
+function clearSelection() {
+    selectedNumbers = [];
+    selectedStars = [];
+    renderNumberGrid();
+    renderStarGrid();
+}
+
 const statistik = document.getElementById('statistik');
 const savedTipsList = document.getElementById('savedTipsList');
 const statistikChart = document.getElementById('statistikChart');
 
 let ziehungen = [];
-
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-}
 
 fetch("euromillionen_draws_2004_2025.json")
   .then(response => response.json())
@@ -60,47 +122,14 @@ fetch("euromillionen_draws_2004_2025.json")
 document.addEventListener("DOMContentLoaded", () => {
   loadSavedTips();
 
-  // Hauptzahlen generieren
-  for (let i = 1; i <= 50; i++) {
-    const btn = document.createElement('button');
-    btn.textContent = i;
-    btn.onclick = () => toggleSelection(btn, 5, 'number-grid');
-    btn.classList.add('number-button');
-    numberGrid.appendChild(btn);
-  }
-
-  // Sternzahlen generieren
-  for (let i = 1; i <= 12; i++) {
-    const btn = document.createElement('button');
-    btn.textContent = i;
-    btn.onclick = () => toggleSelection(btn, 2, 'star-grid');
-    btn.classList.add('star-button');
-    starGrid.appendChild(btn);
-  }
-
   // Dark Mode beim Laden aktivieren
   if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark");
   }
 });
 
-function toggleSelection(button, max, gridClass) {
-    const selected = document.querySelectorAll('.' + gridClass + ' button.selected');
-    if (button.classList.contains('selected')) {
-        button.classList.remove('selected');
-    } else {
-        if (selected.length < max) {
-            button.classList.add('selected');
-        }
-    }
-}
-
 function toggleStatistik() {
     statistik.style.display = statistik.style.display === 'none' ? 'block' : 'none';
-}
-
-function clearSelection() {
-    document.querySelectorAll('button.selected').forEach(btn => btn.classList.remove('selected'));
 }
 
 function generateStatisticalTip() {
