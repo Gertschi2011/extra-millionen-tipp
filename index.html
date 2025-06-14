@@ -9,18 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
-<script>
-const passwort = localStorage.getItem("zugangscode");
-if (!passwort || passwort !== "12345") {
-    const eingabe = prompt("Zugangscode erforderlich:");
-    if (eingabe !== "JuliaK") {
-        alert("Falscher Code. Zugriff verweigert.");
-        window.location.href = "https://www.google.com/";
-    } else {
-        localStorage.setItem("zugangscode", eingabe);
-    }
-}
-</script>
 <body>
     <header>Extra Millionen Tipp</header>
 <main>
@@ -52,7 +40,18 @@ if (!passwort || passwort !== "12345") {
         <ul><li>11 (3x)</li><li>9, 12 (je 2x)</li></ul>
     </div>
 
-    <script src="script.js"></script>
+   <script>
+const passwort = localStorage.getItem("zugangscode");
+if (!passwort || passwort !== "12345") {
+    const eingabe = prompt("Zugangscode erforderlich:");
+    if (eingabe !== "JuliaK") {
+        alert("Falscher Code. Zugriff verweigert.");
+        window.location.href = "https://www.google.com/";
+    } else {
+        localStorage.setItem("zugangscode", eingabe);
+    }
+}
+</script>
 </main>
 </body>
 </html>

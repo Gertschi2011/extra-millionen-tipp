@@ -11,29 +11,29 @@ fetch("euromillionen_draws_2004_2025.json")
   .then(data => {
     ziehungen = data;
     console.log("Ziehungen geladen:", ziehungen.length);
-    // Hier kannst du danach gleich Statistik berechnen
-  });
-  
-const { topZahlen } = berechneHäufigkeit();
 
-const chart = new Chart(statistikChart, {
-    type: 'bar',
-    data: {
+    // Jetzt die Statistik berechnen
+    const { topZahlen } = berechneHäufigkeit(ziehungen);
+
+    const chart = new Chart(statistikChart, {
+      type: 'bar',
+      data: {
         labels: topZahlen.map(z => z.num.toString()),
         datasets: [{
-            label: 'Häufigkeit',
-            data: topZahlen.map(z => z.count),
-            backgroundColor: 'rgba(76, 175, 80, 0.7)',
-            borderColor: 'rgba(56, 142, 60, 1)',
-            borderWidth: 1
+          label: 'Häufigkeit',
+          data: topZahlen.map(z => z.count),
+          backgroundColor: 'rgba(76, 175, 80, 0.7)',
+          borderColor: 'rgba(56, 142, 60, 1)',
+          borderWidth: 1
         }]
-    },
-    options: {
+      },
+      options: {
         scales: {
-            y: { beginAtZero: true }
+          y: { beginAtZero: true }
         }
-    }
-});
+      }
+    });
+  });
 for (let i = 1; i <= 50; i++) {
     const btn = document.createElement('button');
     btn.textContent = i;
@@ -119,26 +119,26 @@ function loadSavedTips() {
 // Sofort beim Laden der Seite ausführen
 document.addEventListener("DOMContentLoaded", loadSavedTips);
 
-function berechneHäufigkeit() {
-    const zahlenHäufigkeit = Array(51).fill(0);
-    const sterneHäufigkeit = Array(13).fill(0);
+function berechneHäufigkeit(draws) {
+  const zahlenHäufigkeit = Array(51).fill(0);
+  const sterneHäufigkeit = Array(13).fill(0);
 
-    historicalDraws.forEach(draw => {
-        draw.numbers.forEach(n => zahlenHäufigkeit[n]++);
-        draw.stars.forEach(s => sterneHäufigkeit[s]++);
-    });
+  draws.forEach(draw => {
+    draw.numbers.forEach(n => zahlenHäufigkeit[n]++);
+    draw.stars.forEach(s => sterneHäufigkeit[s]++);
+  });
 
-    const topZahlen = zahlenHäufigkeit
-        .map((count, num) => ({ num, count }))
-        .slice(1)
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10);
+  const topZahlen = zahlenHäufigkeit
+    .map((count, num) => ({ num, count }))
+    .slice(1)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
 
-    const topSterne = sterneHäufigkeit
-        .map((count, num) => ({ num, count }))
-        .slice(1)
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
+  const topSterne = sterneHäufigkeit
+    .map((count, num) => ({ num, count }))
+    .slice(1)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 
-    return { topZahlen, topSterne };
+  return { topZahlen, topSterne };
 }
