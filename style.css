@@ -14,14 +14,18 @@ body {
 }
 
 header {
-    background-color: var(--primary);
-    padding: 1rem;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    padding: 1.5rem 1rem;
     text-align: center;
     color: white;
-    font-size: 1.3rem;
+    font-size: 1.6rem;
     font-weight: bold;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     text-transform: uppercase;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 4px 24px rgba(76, 175, 80, 0.15);
+    margin-bottom: 2rem;
+    transition: box-shadow 0.2s;
 }
 
 h1 {
