@@ -35,6 +35,11 @@
         <ul id="savedTipsList"></ul>
     </div>
 
+    <div id="latestTipsSection">
+        <h3>Letzte Tipps:</h3>
+        <ul id="latestTipsList"></ul>
+    </div>
+
     <div id="statistik">
         <canvas id="statistikChart" width="400" height="200"></canvas>
         <h3>Häufigste Zahlen:</h3>
@@ -45,6 +50,33 @@
 
 </main>
     <script src="script.js"></script>
+    <script>
+      // Zeige nur die letzten 5 Tipps in der Übersicht
+      function updateLatestTips() {
+          const gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
+          const latestTipsList = document.getElementById("latestTipsList");
+          latestTipsList.innerHTML = "";
+          const letzte = gespeicherte.slice(-5).reverse();
+          letzte.forEach(enc => {
+              try {
+                  const entschluesselt = CryptoJS.AES.decrypt(enc, "geheim").toString(CryptoJS.enc.Utf8);
+                  const li = document.createElement("li");
+                  li.textContent = entschluesselt;
+                  latestTipsList.appendChild(li);
+              } catch (e) {
+                  console.warn("Fehler beim Entschlüsseln eines Tipps:", e);
+              }
+          });
+      }
+
+      // updateLatestTips bei Seitenstart und nach jedem Speichern ausführen
+      document.addEventListener("DOMContentLoaded", updateLatestTips);
+      const origSaveTip = saveTip;
+      window.saveTip = function() {
+          origSaveTip();
+          updateLatestTips();
+      }
+    </script>
     <script>
       (function () {
         const eingabe = prompt("Zugangscode erforderlich:");
