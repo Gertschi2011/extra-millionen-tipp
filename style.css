@@ -58,8 +58,17 @@ h2 {
     margin-bottom: 1.5rem;
 }
 
+/* Verbessert die visuelle Einheitlichkeit und Abhebung der Zahlen- und Stern-Buttons */
 .number-grid button, .star-grid button {
-    font-size: 1rem;
+    padding: 12px;
+    font-size: 1.1rem;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 2px solid #ccc;
+    width: 48px;
+    height: 48px;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
 }
 
 button {
@@ -122,6 +131,7 @@ ul {
 .number-grid button:hover, .star-grid button:hover {
     background-color: var(--primary-dark);
     color: white;
+    border-color: var(--primary-dark);
 }
 
 .number-grid button.selected, .star-grid button.selected {
