@@ -78,51 +78,127 @@ const statistikChart = document.getElementById('statistikChart');
 
 let ziehungen = [];
 
+// Lade Ziehungsdaten und rendere Heatmap & Archiv
 fetch("euromillionen_draws_2004_2025.json")
   .then(response => response.json())
   .then(data => {
     ziehungen = data;
-    console.log("Ziehungen geladen:", ziehungen.length);
-
-    // Jetzt die Statistik berechnen
-    const { topZahlen } = berechneHäufigkeit(ziehungen);
-
-    const chart = new Chart(statistikChart, {
-      type: 'bar',
-      data: {
-        labels: topZahlen.map(z => z.num.toString()),
-        datasets: [{
-          label: 'Häufigkeit',
-          data: topZahlen.map(z => z.count),
-          backgroundColor: 'rgba(76, 175, 80, 0.7)',
-          borderColor: 'rgba(56, 142, 60, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: { beginAtZero: true }
-        }
-      }
-    });
-
-    const listZahlen = document.getElementById("topNumbersList");
-    const listSterne = document.getElementById("topStarsList");
-
-    const { topSterne } = berechneHäufigkeit(ziehungen);
-
-    topZahlen.forEach(z => {
-      const li = document.createElement("li");
-      li.textContent = `${z.num} (${z.count}x)`;
-      listZahlen.appendChild(li);
-    });
-
-    topSterne.forEach(s => {
-      const li = document.createElement("li");
-      li.textContent = `${s.num} (${s.count}x)`;
-      listSterne.appendChild(li);
-    });
+    renderHeatmap();
+    renderArchive();
   });
+
+// Heatmap-Visualisierung mit Chart.js
+function renderHeatmap() {
+    if (!ziehungen.length) return;
+    // Zähle, wie oft jede Zahl gezogen wurde (1-50)
+    const numberCounts = Array(50).fill(0);
+    ziehungen.forEach(draw => {
+        draw.numbers.forEach(num => numberCounts[num - 1]++);
+    });
+
+    // Erstelle Chart
+    const container = document.getElementById('heatmapChartContainer');
+    container.innerHTML = '<canvas id="heatmapCanvas" width="400" height="120"></canvas>';
+    const ctx = document.getElementById('heatmapCanvas').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Array.from({length: 50}, (_, i) => (i + 1).toString()),
+            datasets: [{
+                label: 'Ziehungs-Häufigkeit',
+                data: numberCounts,
+                backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                borderColor: 'rgba(56, 142, 60, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+// Ziehungsarchiv anzeigen
+function renderArchive(filter = "") {
+    const drawList = document.getElementById('drawList');
+    if (!drawList || !ziehungen.length) return;
+
+    // Optional: Sortiere nach Datum absteigend
+    const drawsSorted = [...ziehungen].sort((a, b) => {
+        const da = a.date.split('.').reverse().join('');
+        const db = b.date.split('.').reverse().join('');
+        return db.localeCompare(da);
+    });
+
+    // Filter anwenden
+    let filtered = drawsSorted;
+    if (filter) {
+        const f = filter.trim();
+        filtered = drawsSorted.filter(draw =>
+            draw.date.includes(f) ||
+            (draw.numbers && draw.numbers.some(num => num.toString() === f)) ||
+            (draw.stars && draw.stars.some(star => star.toString() === f))
+        );
+    }
+
+    drawList.innerHTML = '';
+    filtered.forEach(draw => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.textContent = `${draw.date}: Zahlen ${draw.numbers.join(', ')} | Sterne ${draw.stars.join(', ')}`;
+        drawList.appendChild(li);
+    });
+}
+
+// Filter-Input Event Listener
+document.addEventListener("DOMContentLoaded", () => {
+    const filterInput = document.getElementById('archiveFilter');
+    if (filterInput) {
+        filterInput.addEventListener('input', (e) => {
+            renderArchive(e.target.value);
+        });
+    }
+});
+
+// Jetzt die Statistik berechnen
+const { topZahlen } = berechneHäufigkeit(ziehungen);
+
+const chart = new Chart(statistikChart, {
+  type: 'bar',
+  data: {
+    labels: topZahlen.map(z => z.num.toString()),
+    datasets: [{
+      label: 'Häufigkeit',
+      data: topZahlen.map(z => z.count),
+      backgroundColor: 'rgba(76, 175, 80, 0.7)',
+      borderColor: 'rgba(56, 142, 60, 1)',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    scales: {
+      y: { beginAtZero: true }
+    }
+  }
+});
+
+const listZahlen = document.getElementById("topNumbersList");
+const listSterne = document.getElementById("topStarsList");
+
+const { topSterne } = berechneHäufigkeit(ziehungen);
+
+topZahlen.forEach(z => {
+  const li = document.createElement("li");
+  li.textContent = `${z.num} (${z.count}x)`;
+  listZahlen.appendChild(li);
+});
+
+topSterne.forEach(s => {
+  const li = document.createElement("li");
+  li.textContent = `${s.num} (${s.count}x)`;
+  listSterne.appendChild(li);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   loadSavedTips();
