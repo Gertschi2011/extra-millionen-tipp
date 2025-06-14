@@ -127,7 +127,7 @@
         if (strategy === "random") {
             generateStatisticalTip();
         } else {
-            fetch('ziehungen.json')
+            fetch('./ziehungen.json')
                 .then(res => res.json())
                 .then(data => {
                     let counts = {};
@@ -196,7 +196,7 @@
 
     // Heatmap-Visualisierung mit Chart.js
     function renderHeatmap() {
-        fetch("ziehungen.json")
+        fetch("./ziehungen.json")
             .then(res => res.json())
             .then(data => {
                 const counts = {};
@@ -221,7 +221,7 @@
 
     // Ziehungsarchiv anzeigen
     function renderArchive() {
-        fetch("ziehungen.json")
+        fetch("./ziehungen.json")
             .then(res => res.json())
             .then(data => {
                 const list = document.getElementById("drawList");
