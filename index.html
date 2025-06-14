@@ -13,6 +13,7 @@
         <button onclick="generateStatisticalTip()">Auto-Tipp (statistisch)</button>
         <button onclick="toggleStatistik()">Statistik ein-/ausblenden</button>
         <button onclick="clearSelection()">Zurücksetzen</button>
+        <button onclick="saveTip()">Tipp speichern</button>
     </div>
 
     <h2>Wähle 5 Hauptzahlen</h2>
@@ -20,6 +21,11 @@
 
     <h2>Wähle 2 Sternzahlen</h2>
     <div class="star-grid" id="starGrid"></div>
+
+    <div id="savedTipsSection">
+        <h3>Gespeicherte Tipps:</h3>
+        <ul id="savedTipsList"></ul>
+    </div>
 
     <div id="statistik">
         <h3>Häufigste Zahlen:</h3>

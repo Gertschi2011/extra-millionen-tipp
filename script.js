@@ -1,6 +1,7 @@
 const numberGrid = document.getElementById('numberGrid');
 const starGrid = document.getElementById('starGrid');
 const statistik = document.getElementById('statistik');
+const savedTipsList = document.getElementById('savedTipsList');
 
 for (let i = 1; i <= 50; i++) {
     const btn = document.createElement('button');
@@ -48,4 +49,19 @@ function generateStatisticalTip() {
     [...starGrid.children].forEach(btn => {
         if (stars.includes(parseInt(btn.textContent))) btn.classList.add('selected');
     });
+}
+
+function saveTip() {
+    const selectedMain = [...numberGrid.children].filter(btn => btn.classList.contains('selected')).map(btn => btn.textContent);
+    const selectedStars = [...starGrid.children].filter(btn => btn.classList.contains('selected')).map(btn => btn.textContent);
+
+    if (selectedMain.length !== 5 || selectedStars.length !== 2) {
+        alert("Bitte wähle genau 5 Zahlen und 2 Sterne aus.");
+        return;
+    }
+
+    const tip = `Zahlen: ${selectedMain.join(", ")} | Sterne: ${selectedStars.join(", ")}`;
+    const li = document.createElement("li");
+    li.textContent = tip;
+    savedTipsList.appendChild(li);
 }
