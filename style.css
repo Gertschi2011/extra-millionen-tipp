@@ -51,13 +51,15 @@ h2 {
 
 .number-grid, .star-grid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
     gap: 8px;
     padding: 0.5rem;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 12px;
     margin-bottom: 1.5rem;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* Verbessert die visuelle Einheitlichkeit und Abhebung der Zahlen- und Stern-Buttons */
@@ -207,11 +209,11 @@ body.dark-mode .copyright-footer {
 
 @media (max-width: 600px) {
   .number-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
   }
 
   .star-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
   }
 
   .number-grid button,
