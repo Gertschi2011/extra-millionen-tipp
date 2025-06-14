@@ -6,6 +6,11 @@ const statistikChart = document.getElementById('statistikChart');
 
 let ziehungen = [];
 
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+}
+
 fetch("euromillionen_draws_2004_2025.json")
   .then(response => response.json())
   .then(data => {
@@ -51,19 +56,29 @@ fetch("euromillionen_draws_2004_2025.json")
       listSterne.appendChild(li);
     });
   });
-for (let i = 1; i <= 50; i++) {
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadSavedTips();
+
+  for (let i = 1; i <= 50; i++) {
     const btn = document.createElement('button');
     btn.textContent = i;
     btn.onclick = () => toggleSelection(btn, 5, 'number-grid');
     numberGrid.appendChild(btn);
-}
+  }
 
-for (let i = 1; i <= 12; i++) {
+  for (let i = 1; i <= 12; i++) {
     const btn = document.createElement('button');
     btn.textContent = i;
     btn.onclick = () => toggleSelection(btn, 2, 'star-grid');
     starGrid.appendChild(btn);
-}
+  }
+
+  // Dark Mode beim Laden aktivieren
+  if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+  }
+});
 
 function toggleSelection(button, max, gridClass) {
     const selected = document.querySelectorAll('.' + gridClass + ' button.selected');
@@ -133,9 +148,6 @@ function loadSavedTips() {
     });
 }
 
-// Sofort beim Laden der Seite ausführen
-document.addEventListener("DOMContentLoaded", loadSavedTips);
-
 function berechneHäufigkeit(draws) {
   const zahlenHäufigkeit = Array(51).fill(0);
   const sterneHäufigkeit = Array(13).fill(0);
@@ -158,4 +170,30 @@ function berechneHäufigkeit(draws) {
     .slice(0, 5);
 
   return { topZahlen, topSterne };
+}
+
+function checkTipAgainstDraws() {
+    const selectedMain = [...numberGrid.children].filter(btn => btn.classList.contains('selected')).map(btn => parseInt(btn.textContent));
+    const selectedStars = [...starGrid.children].filter(btn => btn.classList.contains('selected')).map(btn => parseInt(btn.textContent));
+
+    if (selectedMain.length !== 5 || selectedStars.length !== 2) {
+        alert("Bitte wähle genau 5 Zahlen und 2 Sterne aus.");
+        return;
+    }
+
+    if (!ziehungen || ziehungen.length === 0) {
+        alert("Ziehungsdaten noch nicht geladen.");
+        return;
+    }
+
+    const match = ziehungen.find(draw =>
+        selectedMain.every(n => draw.numbers.includes(n)) &&
+        selectedStars.every(s => draw.stars.includes(s))
+    );
+
+    if (match) {
+        alert(`Diese Kombination wurde bereits gezogen am ${match.date}!`);
+    } else {
+        alert("Diese Kombination wurde bisher noch nie gezogen.");
+    }
 }

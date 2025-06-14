@@ -20,6 +20,8 @@
         <button class="btn btn-secondary me-2" onclick="toggleStatistik()">Statistik ein-/ausblenden</button>
         <button class="btn btn-warning me-2" onclick="clearSelection()">Zurücksetzen</button>
         <button class="btn btn-success" onclick="saveTip()">Tipp speichern</button>
+        <button class="btn btn-dark me-2" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        <button class="btn btn-info" onclick="checkTipAgainstDraws()">Tipp überprüfen</button>
     </div>
 
     <h2>Wähle 5 Hauptzahlen</h2>
@@ -41,15 +43,45 @@
         <ul id="topStarsList"></ul>
     </div>
 
-   <script>
-const passwort = localStorage.getItem("zugangscode");
-if (!passwort || passwort !== "JuliaK") {
-    const eingabe = prompt("Zugangscode erforderlich:");
-    if (eingabe !== "JuliaK") {
-        alert("Falscher Code. Zugriff verweigert.");
-        window.location.href = "https://www.google.com/";
+</script>
+<script>
+// Dark Mode aktivieren
+function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+}
+
+// Theme beim Laden setzen
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+    }
+});
+
+// Tipp-Kombi gegen Ziehungen prüfen
+function checkTipAgainstDraws() {
+    const selectedMain = [...document.querySelectorAll('#numberGrid button.selected')].map(btn => parseInt(btn.textContent));
+    const selectedStars = [...document.querySelectorAll('#starGrid button.selected')].map(btn => parseInt(btn.textContent));
+
+    if (selectedMain.length !== 5 || selectedStars.length !== 2) {
+        alert("Bitte wähle genau 5 Zahlen und 2 Sterne aus.");
+        return;
+    }
+
+    if (!window.ziehungen || ziehungen.length === 0) {
+        alert("Ziehungsdaten noch nicht geladen.");
+        return;
+    }
+
+    const match = ziehungen.find(draw =>
+        selectedMain.every(n => draw.numbers.includes(n)) &&
+        selectedStars.every(s => draw.stars.includes(s))
+    );
+
+    if (match) {
+        alert(`Diese Kombination wurde bereits gezogen am ${match.date}!`);
     } else {
-        localStorage.setItem("zugangscode", "JuliaK");
+        alert("Diese Kombination wurde bisher noch nie gezogen.");
     }
 }
 </script>
