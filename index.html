@@ -43,13 +43,13 @@
 
    <script>
 const passwort = localStorage.getItem("zugangscode");
-if (!passwort || passwort !== "12345") {
+if (!passwort || passwort !== "JuliaK") {
     const eingabe = prompt("Zugangscode erforderlich:");
     if (eingabe !== "JuliaK") {
         alert("Falscher Code. Zugriff verweigert.");
         window.location.href = "https://www.google.com/";
     } else {
-        localStorage.setItem("zugangscode", eingabe);
+        localStorage.setItem("zugangscode", "JuliaK");
     }
 }
 </script>

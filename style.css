@@ -22,10 +22,24 @@ header {
     font-weight: bold;
 }
 
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--primary-dark);
+}
+
 main {
     padding: 1rem;
     max-width: 800px;
     margin: auto;
+}
+
+.container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 h2 {
@@ -38,6 +52,10 @@ h2 {
     grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
     gap: 6px;
     margin: 1rem 0;
+}
+
+.number-grid button, .star-grid button {
+    font-size: 1rem;
 }
 
 button {
@@ -83,6 +101,14 @@ button.selected {
     padding: 1rem;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+#savedTipsList li {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fafafa;
 }
 
 ul {
