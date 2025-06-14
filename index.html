@@ -256,37 +256,5 @@
     </p>
 </footer>
 
-<script>
-  // Zahlengitter generieren
-  document.addEventListener("DOMContentLoaded", () => {
-      const numberGrid = document.getElementById("numberGrid");
-      const starGrid = document.getElementById("starGrid");
-
-      for (let i = 1; i <= 50; i++) {
-          const btn = document.createElement("button");
-          btn.textContent = i;
-          btn.className = "btn btn-outline-primary";
-          btn.addEventListener("click", () => {
-              btn.classList.toggle("selected");
-              const selected = numberGrid.querySelectorAll(".selected").length;
-              if (selected > 5) btn.classList.remove("selected");
-          });
-          numberGrid.appendChild(btn);
-      }
-
-      for (let i = 1; i <= 12; i++) {
-          const btn = document.createElement("button");
-          btn.textContent = i;
-          btn.className = "btn btn-outline-warning";
-          btn.addEventListener("click", () => {
-              btn.classList.toggle("selected");
-              const selected = starGrid.querySelectorAll(".selected").length;
-              if (selected > 2) btn.classList.remove("selected");
-          });
-          starGrid.appendChild(btn);
-      }
-  });
-</script>
-
 </body>
 </html>
