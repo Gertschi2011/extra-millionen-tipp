@@ -125,22 +125,20 @@ function renderArchive(filter = "") {
     const drawList = document.getElementById('drawList');
     if (!drawList || !ziehungen.length) return;
 
-    // Sortiere nach Datum absteigend (wenn date vorhanden)
+    // Sortiere nach Datum absteigend
     const drawsSorted = [...ziehungen].sort((a, b) => {
-        if (!a.date || !b.date) return 0;
         const da = a.date.split('.').reverse().join('');
         const db = b.date.split('.').reverse().join('');
         return db.localeCompare(da);
     });
 
-    // Filter anwenden
     let filtered = drawsSorted;
     if (filter) {
         const f = filter.trim();
         filtered = drawsSorted.filter(draw =>
             (draw.date && draw.date.includes(f)) ||
-            (draw.numbers && draw.numbers.some(num => num.toString() === f)) ||
-            (draw.stars && draw.stars.some(star => star.toString() === f))
+            (draw.numbers && draw.numbers.some(num => num.toString().includes(f))) ||
+            (draw.stars && draw.stars.some(star => star.toString().includes(f)))
         );
     }
 
@@ -148,7 +146,7 @@ function renderArchive(filter = "") {
     filtered.forEach(draw => {
         const li = document.createElement('li');
         li.className = 'list-group-item';
-        li.textContent = `${draw.date || ''}: Zahlen ${draw.numbers ? draw.numbers.join(', ') : ''} | Sterne ${draw.stars ? draw.stars.join(', ') : ''}`;
+        li.textContent = `${draw.date}: Zahlen ${draw.numbers.join(', ')} | Sterne ${draw.stars.join(', ')}`;
         drawList.appendChild(li);
     });
 }
