@@ -60,23 +60,27 @@ fetch("euromillionen_draws_2004_2025.json")
 document.addEventListener("DOMContentLoaded", () => {
   loadSavedTips();
 
+  // Hauptzahlen generieren
   for (let i = 1; i <= 50; i++) {
     const btn = document.createElement('button');
     btn.textContent = i;
     btn.onclick = () => toggleSelection(btn, 5, 'number-grid');
+    btn.classList.add('number-button');
     numberGrid.appendChild(btn);
   }
 
+  // Sternzahlen generieren
   for (let i = 1; i <= 12; i++) {
     const btn = document.createElement('button');
     btn.textContent = i;
     btn.onclick = () => toggleSelection(btn, 2, 'star-grid');
+    btn.classList.add('star-button');
     starGrid.appendChild(btn);
   }
 
   // Dark Mode beim Laden aktivieren
   if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark");
+    document.body.classList.add("dark");
   }
 });
 
