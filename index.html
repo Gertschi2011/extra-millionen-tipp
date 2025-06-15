@@ -1,3 +1,198 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Extra Millionen Tipp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        .number-grid, .star-grid {
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            max-width: calc(100vw - 32px);
+        }
+    </style>
+</head>
+<body class="container mt-4">
+    <header>Extra Millionen Tipp</header>
+<main>
+    <!-- dein Inhalt hier -->
+<h1>Extra Millionen Tipp</h1>
+<div id="countdown" class="alert alert-info mt-3"></div>
+    <div class="actions mb-3">
+        <button class="btn btn-primary me-2" onclick="generateStatisticalTip()">Auto-Tipp (statistisch)</button>
+        <button class="btn btn-secondary me-2" onclick="toggleStatistik()">Statistik ein-/ausblenden</button>
+        <button class="btn btn-warning me-2" onclick="clearSelection()">Zurücksetzen</button>
+        <button class="btn btn-success" onclick="saveTip()">Tipp speichern</button>
+        <button class="btn btn-dark me-2" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        <button class="btn btn-info" onclick="checkTipAgainstDraws()">Tipp überprüfen</button>
+        <button class="btn btn-outline-info" onclick="exportTipsAsCSV()">📄 Export als CSV</button>
+        <select class="form-select mt-2" onchange="applyStrategy(this.value)">
+            <option value="">-- Strategie wählen --</option>
+            <option value="random">Zufall</option>
+            <option value="hot">Häufigste Zahlen</option>
+            <option value="cold">Seltenste Zahlen</option>
+        </select>
+    </div>
+
+    <h2>Wähle 5 Hauptzahlen</h2>
+    <div class="number-grid" id="numberGrid"></div>
+
+    <h2>Wähle 2 Sternzahlen</h2>
+    <div class="star-grid" id="starGrid"></div>
+
+    <div id="savedTipsSection">
+        <h3>Gespeicherte Tipps:</h3>
+        <ul id="savedTipsList"></ul>
+    </div>
+
+    <div id="latestTipsSection">
+        <h3>Letzte Tipps:</h3>
+        <ul id="latestTipsList"></ul>
+    </div>
+
+    <div id="statistik">
+        <div id="heatmapChartContainer" class="mb-4">
+            <h3>Häufigkeit Heatmap</h3>
+            <canvas id="heatmapChart" width="400" height="200"></canvas>
+        </div>
+        <canvas id="statistikChart" width="400" height="200"></canvas>
+        <h3>Häufigste gezogenen Zahlen:</h3>
+        <ul id="topNumbersList"></ul>
+        <h3>Häufigste gezogene Sterne:</h3>
+        <ul id="topStarsList"></ul>
+    </div>
+
+    <div id="drawArchive" class="mt-5">
+        <input type="text" id="archiveFilter" class="form-control mb-2" placeholder="Nach Datum (TT.MM.JJJJ) oder Zahl suchen...">
+        <ul id="drawList"></ul>
+    </div>
+
+</main>
+    <script src="script.js"></script>
+    <script>
+      // Zeige nur die letzten 5 Tipps in der Übersicht
+      function updateLatestTips() {
+          const gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
+          const latestTipsList = document.getElementById("latestTipsList");
+          latestTipsList.innerHTML = "";
+          const letzte = gespeicherte.slice(-5).reverse();
+          letzte.forEach(enc => {
+              try {
+                  const entschluesselt = CryptoJS.AES.decrypt(enc, "geheim").toString(CryptoJS.enc.Utf8);
+                  const li = document.createElement("li");
+                  li.textContent = entschluesselt;
+                  latestTipsList.appendChild(li);
+              } catch (e) {
+                  console.warn("Fehler beim Entschlüsseln eines Tipps:", e);
+              }
+          });
+      }
+
+      // updateLatestTips bei Seitenstart und nach jedem Speichern ausführen
+      document.addEventListener("DOMContentLoaded", updateLatestTips);
+      const origSaveTip = saveTip;
+      window.saveTip = function() {
+          origSaveTip();
+          updateLatestTips();
+      }
+    </script>
+    <script>
+      (function () {
+        const eingabe = prompt("Zugangscode erforderlich:");
+        if (eingabe !== "JuliaK") {
+            alert("Falscher Code. Zugriff verweigert.");
+            window.location.href = "https://www.google.com/";
+        }
+      })();
+    </script>
+    <script>
+    // Dark Mode speichern und wiederherstellen
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark");
+        }
+
+        startCountdown();
+        renderHeatmap();
+        renderArchive();
+    });
+
+    // Strategie-Generator
+    function applyStrategy(strategy) {
+        if (strategy === "random") {
+            generateStatisticalTip();
+        } else {
+            fetch('./ziehungen.json')
+                .then(res => res.json())
+                .then(data => {
+                    let counts = {};
+                    data.forEach(draw => {
+                        draw.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1);
+                    });
+                    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+                    const selected = strategy === "hot" ? sorted.slice(0, 5) : sorted.slice(-5);
+                    clearSelection();
+                    selected.map(e => parseInt(e[0])).forEach(n => {
+                        document.querySelectorAll('#numberGrid button').forEach(btn => {
+                            if (parseInt(btn.textContent) === n) btn.classList.add('selected');
+                        });
+                    });
+                });
+        }
+    }
+    // Tipps als CSV exportieren
+    function exportTipsAsCSV() {
+        const gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
+        if (gespeicherte.length === 0) {
+            alert("Keine gespeicherten Tipps zum Exportieren.");
+            return;
+        }
+        let csvContent = "data:text/csv;charset=utf-8,Tipp\n";
+        gespeicherte.forEach(enc => {
+            try {
+                const entschluesselt = CryptoJS.AES.decrypt(enc, "geheim").toString(CryptoJS.enc.Utf8);
+                csvContent += entschluesselt + "\n";
+            } catch (e) {
+                console.warn("Fehler beim Entschlüsseln eines Tipps:", e);
+            }
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "tipps.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Countdown bis zur nächsten Ziehung (Di/Fr 21:00)
+    function startCountdown() {
+        function getNextDraw() {
+            const now = new Date();
+            const drawDays = [2, 5]; // Dienstag, Freitag
+            let day = drawDays.find(d => d > now.getDay()) ?? drawDays[0] + 7;
+            let next = new Date(now);
+            next.setDate(now.getDate() + ((day - now.getDay() + 7) % 7));
+            next.setHours(21, 0, 0, 0);
+            return next;
+        }
+        const countdown = document.getElementById("countdown");
+        function update() {
+            const diff = getNextDraw() - new Date();
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((diff / (1000 * 60)) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            countdown.textContent = `Nächste Ziehung in ${d}d ${h}h ${m}m ${s}s`;
+        }
+        setInterval(update, 1000);
+        update();
+    }
+
     // Heatmap-Visualisierung mit Chart.js
     function renderHeatmap() {
         fetch("./ziehungen.json")
@@ -7,43 +202,58 @@
                 data.forEach(z => z.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1));
                 const labels = Array.from({ length: 50 }, (_, i) => i + 1);
                 const values = labels.map(n => counts[n] || 0);
-                const max = Math.max(...values);
-                const min = Math.min(...values);
-
                 const ctx = document.getElementById("heatmapChart").getContext("2d");
                 new Chart(ctx, {
                     type: "bar",
                     data: {
                         labels,
                         datasets: [{
-                            label: "Ziehungen",
+                            label: "Häufigkeit",
                             data: values,
-                            backgroundColor: values.map(v => {
-                                const ratio = (v - min) / (max - min || 1);
-                                return `rgba(${255 - ratio * 100}, ${100 + ratio * 100}, 180, 0.8)`;
-                            }),
-                            borderRadius: 3,
-                            barPercentage: 0.9,
-                            categoryPercentage: 1.0
+                            backgroundColor: values.map(v => `rgba(255, 0, 0, ${v / Math.max(...values)})`)
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => `${ctx.label}: ${ctx.raw}x`
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 10 }
-                            }
-                        }
-                    }
+                    options: { scales: { y: { beginAtZero: true } } }
                 });
             });
     }
+
+    // Ziehungsarchiv anzeigen
+    function renderArchive() {
+        fetch("./ziehungen.json")
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById("drawList");
+                document.getElementById("drawFilter").addEventListener("input", function () {
+                    const val = this.value.trim();
+                    updateDrawList(data, val);
+                });
+                updateDrawList(data);
+            });
+    }
+
+    function updateDrawList(data, filter = "") {
+        const list = document.getElementById("drawList");
+        list.innerHTML = "";
+        const filtered = data.filter(d => d.date.includes(filter) || d.numbers.join(",").includes(filter));
+        filtered.slice(-100).reverse().forEach(d => {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+            li.textContent = `${d.date}: ${d.numbers.join(", ")} ✶ ${d.stars.join(", ")}`;
+            list.appendChild(li);
+        });
+    }
+    </script>
+
+<footer class="copyright-footer mt-4 text-center small text-muted">
+    &copy; 2025 Extra Millionen Tipp – Alle Rechte vorbehalten.
+    <p class="mt-2">
+        Diese Anwendung dient ausschließlich zu Informations- und Unterhaltungszwecken. Es besteht kein Zusammenhang mit offiziellen Lotteriegesellschaften. Es wird keine Garantie auf Gewinnwahrscheinlichkeit oder Richtigkeit der Daten übernommen.
+    </p>
+    <p>
+        Es werden keine personenbezogenen Daten gespeichert. Alle Spieltipps werden lokal im Browser gespeichert und nicht übertragen.
+    </p>
+</footer>
+
+</body>
+</html>
