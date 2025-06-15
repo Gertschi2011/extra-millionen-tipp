@@ -97,6 +97,16 @@
           origSaveTip();
           updateLatestTips();
       }
+    // Wendet die im Select ausgewählte Strategie an
+    function applyStrategyFromSelect() {
+        const select = document.getElementById("strategySelect");
+        const value = select?.value;
+        if (!value) {
+            alert("Bitte zuerst eine Strategie wählen!");
+            return;
+        }
+        applyStrategy(value);
+    }
     </script>
     <script>
     (function () {
@@ -308,13 +318,3 @@
 
 </body>
 </html>
-    // Wendet die im Select ausgewählte Strategie an
-    function applyStrategyFromSelect() {
-        const select = document.getElementById("strategySelect");
-        const value = select?.value;
-        if (!value) {
-            alert("Bitte zuerst eine Strategie wählen!");
-            return;
-        }
-        applyStrategy(value);
-    }
