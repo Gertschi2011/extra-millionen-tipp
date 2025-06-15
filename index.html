@@ -35,6 +35,14 @@
             <option value="hot">Häufigste Zahlen</option>
             <option value="cold">Seltenste Zahlen</option>
         </select>
+        <div class="row mt-2">
+          <div class="col">
+            <input type="number" id="yearFrom" class="form-control" placeholder="Von Jahr (optional)">
+          </div>
+          <div class="col">
+            <input type="number" id="yearTo" class="form-control" placeholder="Bis Jahr (optional)">
+          </div>
+        </div>
     </div>
 
     <h2>Wähle 5 Hauptzahlen</h2>
@@ -130,11 +138,17 @@
         if (strategy === "random") {
             generateStatisticalTip();
         } else {
+            const yearFrom = parseInt(document.getElementById("yearFrom")?.value);
+            const yearTo = parseInt(document.getElementById("yearTo")?.value);
             fetch('./ziehungen.json')
                 .then(res => res.json())
                 .then(data => {
+                    const filteredData = data.filter(draw => {
+                        const y = parseInt(draw.date.split(".")[2]); // Format: TT.MM.JJJJ
+                        return (!yearFrom || y >= yearFrom) && (!yearTo || y <= yearTo);
+                    });
                     let counts = {};
-                    data.forEach(draw => {
+                    filteredData.forEach(draw => {
                         draw.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1);
                     });
                     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
@@ -147,7 +161,7 @@
                     });
                     // Sternzahlen nach Häufigkeit
                     const starCounts = {};
-                    data.forEach(draw => draw.stars.forEach(s => starCounts[s] = (starCounts[s] || 0) + 1));
+                    filteredData.forEach(draw => draw.stars.forEach(s => starCounts[s] = (starCounts[s] || 0) + 1));
                     const sortedStars = Object.entries(starCounts).sort((a, b) => b[1] - a[1]);
                     const selectedStars = strategy === "hot" ? sortedStars.slice(0, 2) : sortedStars.slice(-2);
                     selectedStars.map(e => parseInt(e[0])).forEach(s => {

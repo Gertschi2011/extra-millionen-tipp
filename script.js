@@ -401,8 +401,15 @@ function applyStrategy(strategy) {
             dataPromise = fetch('./ziehungen.json').then(res => res.json());
         }
         dataPromise.then(data => {
+            const yearFrom = parseInt(document.getElementById("yearFrom")?.value) || 0;
+            const yearTo = parseInt(document.getElementById("yearTo")?.value) || 9999;
+            const filteredData = data.filter(draw => {
+                const year = new Date(draw.date).getFullYear();
+                return year >= yearFrom && year <= yearTo;
+            });
+
             let counts = {};
-            data.forEach(draw => {
+            filteredData.forEach(draw => {
                 draw.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1);
             });
             const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
