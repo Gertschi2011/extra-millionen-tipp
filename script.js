@@ -347,5 +347,52 @@ if ('serviceWorker' in navigator) {
 }
 
 function startCountdown() {
-    console.log("Countdown-Funktion ist aktuell leer.");
+    const countdownElem = document.getElementById('countdown');
+    function getNextDraw() {
+        const now = new Date();
+        const drawDays = [2, 5]; // Dienstag, Freitag
+        let day = drawDays.find(d => d > now.getDay());
+        if (day === undefined) day = drawDays[0] + 7;
+        let next = new Date(now);
+        next.setDate(now.getDate() + ((day - now.getDay() + 7) % 7));
+        next.setHours(21, 0, 0, 0);
+        return next;
+    }
+    function update() {
+        const diff = getNextDraw() - new Date();
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        countdownElem.textContent = `Nächste Ziehung in ${d}d ${h}h ${m}m ${s}s`;
+    }
+    update();
+    setInterval(update, 1000);
+}
+
+function applyStrategy(strategy) {
+    if (strategy === "random") {
+        generateStatisticalTip();
+    } else {
+        let dataPromise;
+        if (typeof historicalDraws !== "undefined" && Array.isArray(historicalDraws)) {
+            dataPromise = Promise.resolve(historicalDraws);
+        } else {
+            dataPromise = fetch('./ziehungen.json').then(res => res.json());
+        }
+        dataPromise.then(data => {
+            let counts = {};
+            data.forEach(draw => {
+                draw.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1);
+            });
+            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            const selected = strategy === "hot" ? sorted.slice(0, 5) : sorted.slice(-5);
+            clearSelection();
+            selected.map(e => parseInt(e[0])).forEach(n => {
+                document.querySelectorAll('#numberGrid button').forEach(btn => {
+                    if (parseInt(btn.textContent) === n) btn.classList.add('selected');
+                });
+            });
+        });
+    }
 }

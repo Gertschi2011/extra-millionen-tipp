@@ -99,20 +99,17 @@
       }
     </script>
     <script>
-      (function () {
+    (function () {
         const eingabe = prompt("Zugangscode erforderlich:");
         if (eingabe !== "JuliaK") {
             alert("Falscher Code. Zugriff verweigert.");
             window.location.href = "https://www.google.com/";
         } else {
-            if (localStorage.getItem("theme") === "dark") {
-                document.body.classList.add("dark");
-            }
-
+            setDarkModeBySystem();
             startCountdown();
-            renderHeatmap();
+            importDraws();
         }
-      })();
+    })();
     </script>
     <script>
     // Dark Mode speichern und wiederherstellen
