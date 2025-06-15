@@ -213,7 +213,24 @@ function toggleStatistik() {
 
 function generateStatisticalTip() {
     const strategy = document.getElementById("strategySelect")?.value || "random";
-    applyStrategy(strategy);
+    if (strategy === "random") {
+        // Zufällige Auswahl von 5 Zahlen und 2 Sternen
+        clearSelection();
+        const zahlen = Array.from({ length: 50 }, (_, i) => i + 1).sort(() => 0.5 - Math.random()).slice(0, 5);
+        const sterne = Array.from({ length: 12 }, (_, i) => i + 1).sort(() => 0.5 - Math.random()).slice(0, 2);
+        zahlen.forEach(n => {
+            document.querySelectorAll('#numberGrid button').forEach(btn => {
+                if (parseInt(btn.textContent) === n) btn.classList.add('selected');
+            });
+        });
+        sterne.forEach(s => {
+            document.querySelectorAll('#starGrid button').forEach(btn => {
+                if (parseInt(btn.textContent) === s) btn.classList.add('selected');
+            });
+        });
+    } else {
+        applyStrategy(strategy);
+    }
 }
 
 function saveTip() {
