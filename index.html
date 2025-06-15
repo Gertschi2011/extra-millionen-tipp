@@ -29,7 +29,7 @@
         <button class="btn btn-dark me-2" onclick="toggleDarkMode()">🌙 Dark Mode</button>
         <button class="btn btn-info" onclick="checkTipAgainstDraws()">Tipp überprüfen</button>
         <button class="btn btn-outline-info" onclick="exportTipsAsCSV()">📄 Export als CSV</button>
-        <select class="form-select mt-2" onchange="applyStrategy(this.value)">
+        <select class="form-select mt-2" id="strategySelect">
             <option value="">-- Strategie wählen --</option>
             <option value="random">Zufall</option>
             <option value="hot">Häufigste Zahlen</option>
@@ -133,16 +133,6 @@
                     selected.map(e => parseInt(e[0])).forEach(n => {
                         document.querySelectorAll('#numberGrid button').forEach(btn => {
                             if (parseInt(btn.textContent) === n) btn.classList.add('selected');
-                        });
-                    });
-                    // Sterne nach Häufigkeit (optional)
-                    const starCounts = {};
-                    data.forEach(draw => draw.stars.forEach(s => starCounts[s] = (starCounts[s] || 0) + 1));
-                    const sortedStars = Object.entries(starCounts).sort((a, b) => b[1] - a[1]);
-                    const selectedStars = strategy === "hot" ? sortedStars.slice(0, 2) : sortedStars.slice(-2);
-                    selectedStars.map(e => parseInt(e[0])).forEach(s => {
-                        document.querySelectorAll('#starGrid button').forEach(btn => {
-                            if (parseInt(btn.textContent) === s) btn.classList.add('selected');
                         });
                     });
                 });
@@ -301,17 +291,6 @@
         });
     }
 
-    // Wendet die im Select ausgewählte Strategie an
-    function applyStrategyFromSelect() {
-        const select = document.querySelector("select.form-select");
-        const value = select?.value;
-        if (!value) {
-            alert("Bitte zuerst eine Strategie wählen!");
-            return;
-        }
-        clearSelection();
-        applyStrategy(value);
-    }
     </script>
 
 <footer class="copyright-footer mt-4 text-center small text-muted">
@@ -326,3 +305,13 @@
 
 </body>
 </html>
+    // Wendet die im Select ausgewählte Strategie an
+    function applyStrategyFromSelect() {
+        const select = document.getElementById("strategySelect");
+        const value = select?.value;
+        if (!value) {
+            alert("Bitte zuerst eine Strategie wählen!");
+            return;
+        }
+        applyStrategy(value);
+    }
