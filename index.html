@@ -116,7 +116,9 @@
 
             startCountdown();
             renderHeatmap();
-            renderArchive();
+            if (document.getElementById("archiveFilter")) {
+                renderArchive();
+            }
         }
       })();
     </script>
