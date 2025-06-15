@@ -391,35 +391,59 @@ function startCountdown() {
 }
 
 function applyStrategy(strategy) {
-    if (strategy === "random") {
-        generateStatisticalTip();
+    let dataPromise;
+    if (typeof historicalDraws !== "undefined" && Array.isArray(historicalDraws)) {
+        dataPromise = Promise.resolve(historicalDraws);
     } else {
-        let dataPromise;
-        if (typeof historicalDraws !== "undefined" && Array.isArray(historicalDraws)) {
-            dataPromise = Promise.resolve(historicalDraws);
-        } else {
-            dataPromise = fetch('./ziehungen.json').then(res => res.json());
-        }
-        dataPromise.then(data => {
-            const yearFrom = parseInt(document.getElementById("yearFrom")?.value) || 0;
-            const yearTo = parseInt(document.getElementById("yearTo")?.value) || 9999;
-            const filteredData = data.filter(draw => {
-                const year = new Date(draw.date).getFullYear();
+        dataPromise = fetch('./ziehungen.json').then(res => res.json());
+    }
+    dataPromise.then(data => {
+        // Jahrfilter auslesen
+        const yearFrom = parseInt(document.getElementById("yearFrom")?.value) || 0;
+        const yearTo = parseInt(document.getElementById("yearTo")?.value) || 9999;
+
+        // Filtere nach Jahr, wenn möglich (wenn draw.date existiert)
+        let filteredData = data;
+        if (data.length && data[0].date) {
+            filteredData = data.filter(draw => {
+                const year = draw.date
+                    ? (draw.date.includes(".") // Format TT.MM.JJJJ
+                        ? parseInt(draw.date.split(".")[2])
+                        : new Date(draw.date).getFullYear())
+                    : 0;
                 return year >= yearFrom && year <= yearTo;
             });
+        }
 
-            let counts = {};
-            filteredData.forEach(draw => {
-                draw.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1);
-            });
-            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-            const selected = strategy === "hot" ? sorted.slice(0, 5) : sorted.slice(-5);
-            clearSelection();
-            selected.map(e => parseInt(e[0])).forEach(n => {
-                document.querySelectorAll('#numberGrid button').forEach(btn => {
-                    if (parseInt(btn.textContent) === n) btn.classList.add('selected');
-                });
+        // Häufigkeiten berechnen
+        let counts = {};
+        filteredData.forEach(draw => {
+            draw.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1);
+        });
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        // Für "hot" die häufigsten, für "cold" die seltensten Zahlen
+        const selected = strategy === "hot" ? sorted.slice(0, 5) : sorted.slice(-5);
+
+        clearSelection();
+        selected.map(e => parseInt(e[0])).forEach(n => {
+            document.querySelectorAll('#numberGrid button').forEach(btn => {
+                if (parseInt(btn.textContent) === n) btn.classList.add('selected');
             });
         });
-    }
+
+        // Sternzahlen analog berechnen
+        let starCounts = {};
+        filteredData.forEach(draw => {
+            if (draw.stars) {
+                draw.stars.forEach(s => starCounts[s] = (starCounts[s] || 0) + 1);
+            }
+        });
+        const sortedStars = Object.entries(starCounts).sort((a, b) => b[1] - a[1]);
+        const selectedStars = strategy === "hot" ? sortedStars.slice(0, 2) : sortedStars.slice(-2);
+        selectedStars.map(e => parseInt(e[0])).forEach(s => {
+            document.querySelectorAll('#starGrid button').forEach(btn => {
+                if (parseInt(btn.textContent) === s) btn.classList.add('selected');
+            });
+        });
+    });
 }
