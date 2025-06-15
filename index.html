@@ -44,14 +44,18 @@
     <h2>Wähle 2 Sternzahlen</h2>
     <div class="star-grid" id="starGrid"></div>
 
-    <div id="savedTipsSection">
-        <h3>Gespeicherte Tipps:</h3>
-        <ul id="savedTipsList"></ul>
+    <div id="savedTipsSection" class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Gespeicherte Tipps:</h5>
+            <ul id="savedTipsList" class="list-group list-group-flush"></ul>
+        </div>
     </div>
 
-    <div id="latestTipsSection">
-        <h3>Letzte Tipps:</h3>
-        <ul id="latestTipsList"></ul>
+    <div id="latestTipsSection" class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Letzte Tipps:</h5>
+            <ul id="latestTipsList" class="list-group list-group-flush"></ul>
+        </div>
     </div>
 
     <div id="statistik">
@@ -68,7 +72,7 @@
 
     <div id="drawArchive" class="mt-5">
         <input type="text" id="archiveFilter" class="form-control mb-2" placeholder="Nach Datum (TT.MM.JJJJ) oder Zahl suchen...">
-        <ul id="drawList"></ul>
+        <ul id="drawList" class="list-group"></ul>
     </div>
 
 </main>
@@ -193,7 +197,7 @@
         update();
     }
 
-    // Heatmap-Visualisierung mit Chart.js
+    // Heatmap-Visualisierung mit Chart.js (optimierte Darstellung)
     function renderHeatmap() {
         fetch("./ziehungen.json")
             .then(res => res.json())
@@ -202,19 +206,49 @@
                 data.forEach(z => z.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1));
                 const labels = Array.from({ length: 50 }, (_, i) => i + 1);
                 const values = labels.map(n => counts[n] || 0);
+                const max = Math.max(...values);
+                const min = Math.min(...values);
+
                 const ctx = document.getElementById("heatmapChart").getContext("2d");
                 new Chart(ctx, {
                     type: "bar",
                     data: {
                         labels,
                         datasets: [{
-                            label: "Häufigkeit",
+                            label: "Ziehungen",
                             data: values,
-                            backgroundColor: values.map(v => `rgba(255, 0, 0, ${v / Math.max(...values)})`)
+                            backgroundColor: values.map(v => {
+                                const ratio = (v - min) / (max - min || 1);
+                                const hue = 240 - ratio * 240;
+                                return `hsl(${hue}, 70%, 60%)`;
+                            }),
+                            borderRadius: 4,
+                            barThickness: 12
                         }]
                     },
-                    options: { scales: { y: { beginAtZero: true } } }
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `${ctx.label}: ${ctx.raw}x`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
                 });
+            })
+            .catch(error => {
+                console.error("Fehler beim Laden der Ziehungen:", error);
             });
     }
 

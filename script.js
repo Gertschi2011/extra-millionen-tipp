@@ -72,7 +72,7 @@ function clearSelection() {
     renderStarGrid();
 }
 
-const statistik = document.getElementById('statistik');
+const statistik = document.getElementById('statistik') || document.createElement('div');
 const savedTipsList = document.getElementById('savedTipsList');
 const statistikChart = document.getElementById('statistikChart');
 
@@ -80,12 +80,19 @@ let ziehungen = [];
 
 // Lade Ziehungsdaten und rendere Archiv & Heatmap
 fetch("euromillionen_draws_2004_2025.json")
-  .then(response => response.json())
+  .then(response => {
+      if (!response.ok) throw new Error("Datei nicht gefunden oder Serverfehler");
+      return response.json();
+  })
   .then(data => {
     // Filtere nur gültige Ziehungen (mit Zahlen und Sternen)
     ziehungen = data.filter(draw => Array.isArray(draw.numbers) && Array.isArray(draw.stars));
     renderArchive();
     renderHeatmap();
+  })
+  .catch(err => {
+      console.error("Fehler beim Laden der Ziehungen:", err);
+      alert("Ziehungsdaten konnten nicht geladen werden.");
   });
 
 // Heatmap-Visualisierung mit Chart.js
@@ -205,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Dark Mode beim Laden aktivieren
   const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark") {
+  if (document.body && savedTheme === "dark") {
       document.body.classList.add("dark-mode");
   }
 });
@@ -341,4 +348,10 @@ function exportTipsAsCSV() {
     a.download = 'euromillionen_tipps.csv';
     a.click();
     URL.revokeObjectURL(url);
+}
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log("Service Worker registriert"))
+      .catch(err => console.error("Service Worker Fehler:", err));
 }
