@@ -69,11 +69,6 @@
         <ul id="topStarsList"></ul>
     </div>
 
-    <div id="drawArchive" class="mt-5">
-        <input type="text" id="archiveFilter" class="form-control mb-2" placeholder="Nach Datum (TT.MM.JJJJ) oder Zahl suchen...">
-        <ul id="drawList" class="list-group"></ul>
-    </div>
-
 </main>
     <script src="script.js"></script>
     <script>
@@ -116,9 +111,6 @@
 
             startCountdown();
             renderHeatmap();
-            if (document.getElementById("archiveFilter")) {
-                renderArchive();
-            }
         }
       })();
     </script>
@@ -250,43 +242,36 @@
                         }
                     }
                 });
+
+                const sortedNumbers = labels.map((n, i) => ({ num: n, count: values[i] }))
+                                           .sort((a, b) => b.count - a.count)
+                                           .slice(0, 5);
+                const topNumbersList = document.getElementById("topNumbersList");
+                topNumbersList.innerHTML = "";
+                sortedNumbers.forEach(entry => {
+                    const li = document.createElement("li");
+                    li.textContent = `${entry.num}: ${entry.count}x`;
+                    topNumbersList.appendChild(li);
+                });
+
+                const starCounts = {};
+                data.forEach(z => z.stars.forEach(s => starCounts[s] = (starCounts[s] || 0) + 1));
+                const sortedStars = Object.entries(starCounts)
+                                          .sort((a, b) => b[1] - a[1])
+                                          .slice(0, 2);
+                const topStarsList = document.getElementById("topStarsList");
+                topStarsList.innerHTML = "";
+                sortedStars.forEach(([star, count]) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${star}: ${count}x`;
+                    topStarsList.appendChild(li);
+                });
             })
             .catch(error => {
                 console.error("Fehler beim Laden der Ziehungen für Heatmap:", error);
             });
     }
 
-    // Ziehungsarchiv anzeigen
-    function renderArchive() {
-        fetch("./ziehungen.json")
-            .then(res => res.json())
-            .then(data => {
-                const list = document.getElementById("drawList");
-                const filterInput = document.getElementById("archiveFilter");
-                if (filterInput) {
-                    filterInput.addEventListener("input", function () {
-                        const val = this.value.trim();
-                        if (val.length > 0) {
-                            updateDrawList(data, val);
-                        } else {
-                            document.getElementById("drawList").innerHTML = "";
-                        }
-                    });
-                }
-            });
-    }
-
-    function updateDrawList(data, filter = "") {
-        const list = document.getElementById("drawList");
-        list.innerHTML = "";
-        const filtered = data.filter(d => d.date.includes(filter) || d.numbers.join(",").includes(filter));
-        filtered.slice(-100).reverse().forEach(d => {
-            const li = document.createElement("li");
-            li.className = "list-group-item";
-            li.textContent = `${d.date}: ${d.numbers.join(", ")} ✶ ${d.stars.join(", ")}`;
-            list.appendChild(li);
-        });
-    }
     </script>
 
 <footer class="copyright-footer mt-4 text-center small text-muted">

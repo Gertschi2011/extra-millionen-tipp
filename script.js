@@ -131,49 +131,7 @@ function renderHeatmap() {
     });
 }
 
-// Archiv-Rendering mit Filter
-function renderArchive(filter = "") {
-    document.getElementById('drawArchive').style.display = filter ? 'block' : 'none';
-    const drawList = document.getElementById('drawList');
-    if (!drawList || !ziehungen.length) return;
 
-    drawList.innerHTML = '';
-    if (!filter) return;
-
-    // Sortiere nach Datum absteigend
-    const drawsSorted = [...ziehungen].sort((a, b) => {
-        const da = a.date.split('.').reverse().join('');
-        const db = b.date.split('.').reverse().join('');
-        return db.localeCompare(da);
-    });
-
-    let filtered = drawsSorted;
-    if (filter) {
-        const f = filter.trim();
-        filtered = drawsSorted.filter(draw =>
-            (draw.date && draw.date.includes(f)) ||
-            (draw.numbers && draw.numbers.some(num => num.toString().includes(f))) ||
-            (draw.stars && draw.stars.some(star => star.toString().includes(f)))
-        );
-    }
-
-    filtered.forEach(draw => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.textContent = `${draw.date}: Zahlen ${draw.numbers.join(', ')} | Sterne ${draw.stars.join(', ')}`;
-        drawList.appendChild(li);
-    });
-}
-
-// Filter-Input Event Listener
-document.addEventListener("DOMContentLoaded", () => {
-    const filterInput = document.getElementById('archiveFilter');
-    if (filterInput) {
-        filterInput.addEventListener('input', (e) => {
-            renderArchive(e.target.value);
-        });
-    }
-});
 
 // Jetzt die Statistik berechnen
 const { topZahlen } = berechneHäufigkeit(ziehungen);
