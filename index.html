@@ -22,7 +22,7 @@
 <h1>Extra Millionen Tipp</h1>
 <div id="countdown" class="alert alert-info mt-3"></div>
     <div class="actions mb-3">
-        <button class="btn btn-primary me-2" onclick="generateStatisticalTip()">Auto-Tipp (statistisch)</button>
+        <button class="btn btn-primary me-2" onclick="applyStrategyFromSelect()">Auto-Tipp</button>
         <button class="btn btn-secondary me-2" onclick="toggleStatistik()">Statistik ein-/ausblenden</button>
         <button class="btn btn-warning me-2" onclick="clearSelection()">Zurücksetzen</button>
         <button class="btn btn-success" onclick="saveTip()">Tipp speichern</button>
@@ -133,6 +133,16 @@
                     selected.map(e => parseInt(e[0])).forEach(n => {
                         document.querySelectorAll('#numberGrid button').forEach(btn => {
                             if (parseInt(btn.textContent) === n) btn.classList.add('selected');
+                        });
+                    });
+                    // Sterne nach Häufigkeit (optional)
+                    const starCounts = {};
+                    data.forEach(draw => draw.stars.forEach(s => starCounts[s] = (starCounts[s] || 0) + 1));
+                    const sortedStars = Object.entries(starCounts).sort((a, b) => b[1] - a[1]);
+                    const selectedStars = strategy === "hot" ? sortedStars.slice(0, 2) : sortedStars.slice(-2);
+                    selectedStars.map(e => parseInt(e[0])).forEach(s => {
+                        document.querySelectorAll('#starGrid button').forEach(btn => {
+                            if (parseInt(btn.textContent) === s) btn.classList.add('selected');
                         });
                     });
                 });
@@ -291,6 +301,17 @@
         });
     }
 
+    // Wendet die im Select ausgewählte Strategie an
+    function applyStrategyFromSelect() {
+        const select = document.querySelector("select.form-select");
+        const value = select?.value;
+        if (!value) {
+            alert("Bitte zuerst eine Strategie wählen!");
+            return;
+        }
+        clearSelection();
+        applyStrategy(value);
+    }
     </script>
 
 <footer class="copyright-footer mt-4 text-center small text-muted">

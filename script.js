@@ -212,10 +212,8 @@ function toggleStatistik() {
 }
 
 function generateStatisticalTip() {
-    selectedNumbers = [37, 3, 29, 35, 12];
-    selectedStars = [11, 12];
-    renderNumberGrid();
-    renderStarGrid();
+    const strategy = document.getElementById("strategySelect")?.value || "random";
+    applyStrategy(strategy);
 }
 
 function saveTip() {
