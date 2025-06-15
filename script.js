@@ -224,6 +224,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function checkAccessCode() {
+    const input = document.getElementById("accessCodeInput").value;
+    if (input === "JuliaK") {
+        document.getElementById("accessOverlay").style.display = "none";
+    } else {
+        alert("Falscher Code!");
+    }
+}
+
 function toggleStatistik() {
     statistik.style.display = statistik.style.display === 'none' ? 'block' : 'none';
 }

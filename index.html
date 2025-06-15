@@ -109,20 +109,20 @@
         if (eingabe !== "JuliaK") {
             alert("Falscher Code. Zugriff verweigert.");
             window.location.href = "https://www.google.com/";
+        } else {
+            if (localStorage.getItem("theme") === "dark") {
+                document.body.classList.add("dark");
+            }
+
+            startCountdown();
+            renderHeatmap();
+            renderArchive();
         }
       })();
     </script>
     <script>
     // Dark Mode speichern und wiederherstellen
-    document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem("theme") === "dark") {
-            document.body.classList.add("dark");
-        }
-
-        startCountdown();
-        renderHeatmap();
-        renderArchive();
-    });
+    // Entfernt aus DOMContentLoaded, wird jetzt nach Zugangscode ausgeführt
 
     // Strategie-Generator
     function applyStrategy(strategy) {
@@ -208,7 +208,10 @@
                 const max = Math.max(...values);
                 const min = Math.min(...values);
 
-                const ctx = document.getElementById("heatmapChart").getContext("2d");
+                const canvas = document.getElementById("heatmapChart");
+                if (!canvas) return;
+                const ctx = canvas.getContext("2d");
+
                 new Chart(ctx, {
                     type: "bar",
                     data: {
@@ -247,7 +250,7 @@
                 });
             })
             .catch(error => {
-                console.error("Fehler beim Laden der Ziehungen:", error);
+                console.error("Fehler beim Laden der Ziehungen für Heatmap:", error);
             });
     }
 
@@ -257,14 +260,17 @@
             .then(res => res.json())
             .then(data => {
                 const list = document.getElementById("drawList");
-                document.getElementById("archiveFilter").addEventListener("input", function () {
-                    const val = this.value.trim();
-                    if (val.length > 0) {
-                        updateDrawList(data, val);
-                    } else {
-                        document.getElementById("drawList").innerHTML = "";
-                    }
-                });
+                const filterInput = document.getElementById("archiveFilter");
+                if (filterInput) {
+                    filterInput.addEventListener("input", function () {
+                        const val = this.value.trim();
+                        if (val.length > 0) {
+                            updateDrawList(data, val);
+                        } else {
+                            document.getElementById("drawList").innerHTML = "";
+                        }
+                    });
+                }
             });
     }
 
