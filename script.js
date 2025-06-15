@@ -74,7 +74,11 @@ function clearSelection() {
 
 const statistik = document.getElementById('statistik') || document.createElement('div');
 const savedTipsList = document.getElementById('savedTipsList');
-const statistikChart = document.getElementById('statistikChart');
+const statistikChart = document.getElementById('statistikChart') || null;
+
+// const drawArchive = document.getElementById('drawArchive'); // vorherige fehlerhafte Referenz
+const drawArchive = document.getElementById('drawArchive');
+if (drawArchive) drawArchive.style.display = "none";
 
 let ziehungen = [];
 
@@ -99,7 +103,7 @@ function importDraws() {
                 renderHeatmap();
                 renderStatistics();
             } else {
-                console.error("Keine gültigen Ziehungsdaten verfügbar.");
+                alert("Keine Ziehungsdaten verfügbar!");
             }
         });
 }
@@ -148,26 +152,27 @@ const listSterne = document.getElementById("topStarsList");
 function renderStatistics() {
     const { topZahlen, topSterne } = berechneHäufigkeit(ziehungen);
 
-    if (statistikChart && Chart.getChart(statistikChart)) {
-        Chart.getChart(statistikChart).destroy();
-    }
-
-    new Chart(statistikChart, {
-        type: 'bar',
-        data: {
-            labels: topZahlen.map(z => z.num.toString()),
-            datasets: [{
-                label: 'Häufigkeit',
-                data: topZahlen.map(z => z.count),
-                backgroundColor: 'rgba(76, 175, 80, 0.7)',
-                borderColor: 'rgba(56, 142, 60, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: { y: { beginAtZero: true } }
+    if (statistikChart) {
+        if (Chart.getChart(statistikChart)) {
+            Chart.getChart(statistikChart).destroy();
         }
-    });
+        new Chart(statistikChart, {
+            type: 'bar',
+            data: {
+                labels: topZahlen.map(z => z.num.toString()),
+                datasets: [{
+                    label: 'Häufigkeit',
+                    data: topZahlen.map(z => z.count),
+                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                    borderColor: 'rgba(56, 142, 60, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
 
     listZahlen.innerHTML = '';
     listSterne.innerHTML = '';
@@ -339,4 +344,8 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js')
       .then(() => console.log("Service Worker registriert"))
       .catch(err => console.error("Service Worker Fehler:", err));
+}
+
+function startCountdown() {
+    console.log("Countdown-Funktion ist aktuell leer.");
 }

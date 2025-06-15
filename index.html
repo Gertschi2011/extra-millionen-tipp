@@ -17,7 +17,6 @@
     </style>
 </head>
 <body class="container mt-4">
-    <header>Extra Millionen Tipp</header>
 <main>
     <!-- dein Inhalt hier -->
 <h1>Extra Millionen Tipp</h1>
@@ -70,6 +69,7 @@
     </div>
 
 </main>
+    <script src="historical-data.js"></script>
     <script src="script.js"></script>
     <script>
       // Zeige nur die letzten 5 Tipps in der Übersicht
@@ -192,84 +192,88 @@
 
     // Heatmap-Visualisierung mit Chart.js (optimierte Darstellung)
     function renderHeatmap() {
-        fetch("./ziehungen.json")
-            .then(res => res.json())
-            .then(data => {
-                const counts = {};
-                data.forEach(z => z.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1));
-                const labels = Array.from({ length: 50 }, (_, i) => i + 1);
-                const values = labels.map(n => counts[n] || 0);
-                const max = Math.max(...values);
-                const min = Math.min(...values);
+        let dataPromise;
+        if (typeof historicalDraws !== "undefined" && Array.isArray(historicalDraws)) {
+            dataPromise = Promise.resolve(historicalDraws);
+        } else {
+            dataPromise = fetch("./ziehungen.json").then(res => res.json());
+        }
+        dataPromise.then(data => {
+            const counts = {};
+            data.forEach(z => z.numbers.forEach(n => counts[n] = (counts[n] || 0) + 1));
+            const labels = Array.from({ length: 50 }, (_, i) => i + 1);
+            const values = labels.map(n => counts[n] || 0);
+            const max = Math.max(...values);
+            const min = Math.min(...values);
 
-                const canvas = document.getElementById("heatmapChart");
-                if (!canvas) return;
-                const ctx = canvas.getContext("2d");
+            const canvas = document.getElementById("heatmapChart");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
 
-                new Chart(ctx, {
-                    type: "bar",
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: "Ziehungen",
-                            data: values,
-                            backgroundColor: values.map(v => {
-                                const ratio = (v - min) / (max - min || 1);
-                                const hue = 240 - ratio * 240;
-                                return `hsl(${hue}, 70%, 60%)`;
-                            }),
-                            borderRadius: 4,
-                            barThickness: 12
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => `${ctx.label}: ${ctx.raw}x`
-                                }
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [{
+                        label: "Ziehungen",
+                        data: values,
+                        backgroundColor: values.map(v => {
+                            const ratio = (v - min) / (max - min || 1);
+                            const hue = 240 - ratio * 240;
+                            return `hsl(${hue}, 70%, 60%)`;
+                        }),
+                        borderRadius: 4,
+                        barThickness: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `${ctx.label}: ${ctx.raw}x`
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
                             }
                         }
                     }
-                });
-
-                const sortedNumbers = labels.map((n, i) => ({ num: n, count: values[i] }))
-                                           .sort((a, b) => b.count - a.count)
-                                           .slice(0, 5);
-                const topNumbersList = document.getElementById("topNumbersList");
-                topNumbersList.innerHTML = "";
-                sortedNumbers.forEach(entry => {
-                    const li = document.createElement("li");
-                    li.textContent = `${entry.num}: ${entry.count}x`;
-                    topNumbersList.appendChild(li);
-                });
-
-                const starCounts = {};
-                data.forEach(z => z.stars.forEach(s => starCounts[s] = (starCounts[s] || 0) + 1));
-                const sortedStars = Object.entries(starCounts)
-                                          .sort((a, b) => b[1] - a[1])
-                                          .slice(0, 2);
-                const topStarsList = document.getElementById("topStarsList");
-                topStarsList.innerHTML = "";
-                sortedStars.forEach(([star, count]) => {
-                    const li = document.createElement("li");
-                    li.textContent = `${star}: ${count}x`;
-                    topStarsList.appendChild(li);
-                });
-            })
-            .catch(error => {
-                console.error("Fehler beim Laden der Ziehungen für Heatmap:", error);
+                }
             });
+
+            const sortedNumbers = labels.map((n, i) => ({ num: n, count: values[i] }))
+                                       .sort((a, b) => b.count - a.count)
+                                       .slice(0, 5);
+            const topNumbersList = document.getElementById("topNumbersList");
+            topNumbersList.innerHTML = "";
+            sortedNumbers.forEach(entry => {
+                const li = document.createElement("li");
+                li.textContent = `${entry.num}: ${entry.count}x`;
+                topNumbersList.appendChild(li);
+            });
+
+            const starCounts = {};
+            data.forEach(z => z.stars.forEach(s => starCounts[s] = (starCounts[s] || 0) + 1));
+            const sortedStars = Object.entries(starCounts)
+                                      .sort((a, b) => b[1] - a[1])
+                                      .slice(0, 2);
+            const topStarsList = document.getElementById("topStarsList");
+            topStarsList.innerHTML = "";
+            sortedStars.forEach(([star, count]) => {
+                const li = document.createElement("li");
+                li.textContent = `${star}: ${count}x`;
+                topStarsList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error("Fehler beim Laden der Ziehungen für Heatmap:", error);
+        });
     }
 
     </script>
