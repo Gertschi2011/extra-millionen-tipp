@@ -63,7 +63,6 @@
             <h3>Häufigkeit Heatmap</h3>
             <canvas id="heatmapChart" width="400" height="200"></canvas>
         </div>
-        <canvas id="statistikChart" width="400" height="200"></canvas>
         <h3>Häufigste gezogenen Zahlen:</h3>
         <ul id="topNumbersList"></ul>
         <h3>Häufigste gezogene Sterne:</h3>
@@ -258,11 +257,14 @@
             .then(res => res.json())
             .then(data => {
                 const list = document.getElementById("drawList");
-                document.getElementById("drawFilter").addEventListener("input", function () {
+                document.getElementById("archiveFilter").addEventListener("input", function () {
                     const val = this.value.trim();
-                    updateDrawList(data, val);
+                    if (val.length > 0) {
+                        updateDrawList(data, val);
+                    } else {
+                        document.getElementById("drawList").innerHTML = "";
+                    }
                 });
-                updateDrawList(data);
             });
     }
 

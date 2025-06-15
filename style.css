@@ -282,3 +282,12 @@ body.dark-mode .number-grid {
     font-size: 1.2rem;
     font-weight: bold;
 }
+#drawList.hidden {
+    display: none;
+}
+
+#drawList li {
+    font-size: 1rem;
+    padding: 6px 12px;
+    border-bottom: 1px solid #ddd;
+}

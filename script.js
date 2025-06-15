@@ -106,6 +106,10 @@ function renderHeatmap() {
 
     // Erstelle Chart
     const container = document.getElementById('heatmapChartContainer');
+    // Entferne überflüssige Canvas-Elemente, falls vorhanden
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
     container.innerHTML = '<canvas id="heatmapCanvas" width="400" height="120"></canvas>';
     const ctx = document.getElementById('heatmapCanvas').getContext('2d');
     new Chart(ctx, {
@@ -129,8 +133,12 @@ function renderHeatmap() {
 
 // Archiv-Rendering mit Filter
 function renderArchive(filter = "") {
+    document.getElementById('drawArchive').style.display = filter ? 'block' : 'none';
     const drawList = document.getElementById('drawList');
     if (!drawList || !ziehungen.length) return;
+
+    drawList.innerHTML = '';
+    if (!filter) return;
 
     // Sortiere nach Datum absteigend
     const drawsSorted = [...ziehungen].sort((a, b) => {
@@ -149,7 +157,6 @@ function renderArchive(filter = "") {
         );
     }
 
-    drawList.innerHTML = '';
     filtered.forEach(draw => {
         const li = document.createElement('li');
         li.className = 'list-group-item';
