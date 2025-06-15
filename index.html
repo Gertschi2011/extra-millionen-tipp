@@ -138,6 +138,9 @@
                 });
         }
     }
+
+    // Entfernt: Automatisches Ausführen der Strategie beim Wechsel des Selects
+    // document.getElementById("strategySelect").addEventListener("change", e => applyStrategy(e.target.value));
     // Tipps als CSV exportieren
     function exportTipsAsCSV() {
         const gespeicherte = JSON.parse(localStorage.getItem("tipps") || "[]");
