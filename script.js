@@ -348,18 +348,23 @@ if ('serviceWorker' in navigator) {
 
 function startCountdown() {
     const countdownElem = document.getElementById('countdown');
+    if (!countdownElem) return;
     function getNextDraw() {
         const now = new Date();
-        const drawDays = [2, 5]; // Dienstag, Freitag
-        let day = drawDays.find(d => d > now.getDay());
-        if (day === undefined) day = drawDays[0] + 7;
+        const drawDays = [2, 5]; // Dienstag (2), Freitag (5)
+        let nextDay = drawDays.find(d => d > now.getDay());
+        if (nextDay === undefined) nextDay = drawDays[0] + 7;
         let next = new Date(now);
-        next.setDate(now.getDate() + ((day - now.getDay() + 7) % 7));
+        next.setDate(now.getDate() + ((nextDay - now.getDay() + 7) % 7));
         next.setHours(21, 0, 0, 0);
         return next;
     }
     function update() {
         const diff = getNextDraw() - new Date();
+        if (diff <= 0) {
+            countdownElem.textContent = "Ziehung läuft!";
+            return;
+        }
         const d = Math.floor(diff / (1000 * 60 * 60 * 24));
         const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
         const m = Math.floor((diff / (1000 * 60)) % 60);
